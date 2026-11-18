@@ -65,6 +65,7 @@
 #include "view/utils.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdio>
 #include <iterator>
 #include <vector>
@@ -2112,10 +2113,11 @@ bool Timeline::getDrawableLayers(layer_t* firstDrawableLayer, layer_t* lastDrawa
   if (m_rows.empty())
     return false; // No layers
 
-  layer_t i = lastLayer() - ((viewScroll().y + getCelsBounds().h) / layerBoxHeight());
+  layer_t i = lastLayer() -
+              int(std::floor((viewScroll().y + getCelsBounds().h) / layerBoxHeight()));
   i = std::clamp(i, firstLayer(), lastLayer());
 
-  layer_t j = lastLayer() - viewScroll().y / layerBoxHeight();
+  layer_t j = lastLayer() - int(std::floor(viewScroll().y / layerBoxHeight()));
   ;
   if (!m_rows.empty())
     j = std::clamp(j, firstLayer(), lastLayer());
@@ -3554,8 +3556,8 @@ Timeline::Hit Timeline::hitTest(ui::Message* msg, const gfx::Point& mousePos)
     gfx::PointF scroll = viewScroll();
     int top = topHeight();
 
-    hit.layer = lastLayer() -
-                ((mousePos.y - top - headerBoxHeight() + scroll.y) / layerBoxHeight());
+    hit.layer = lastLayer() - int(std::floor((mousePos.y - top - headerBoxHeight() + scroll.y) /
+                                             layerBoxHeight()));
 
     hit.frame = getFrameInXPos(mousePos.x - separatorX() - m_separator_w + scroll.x);
 
@@ -3767,7 +3769,8 @@ Timeline::Hit Timeline::hitTestCel(const gfx::Point& mousePos)
   gfx::PointF scroll = viewScroll();
   int top = topHeight();
 
-  hit.layer = lastLayer() - ((mousePos.y - top - headerBoxHeight() + scroll.y) / layerBoxHeight());
+  hit.layer = lastLayer() -
+              int(std::floor((mousePos.y - top - headerBoxHeight() + scroll.y) / layerBoxHeight()));
 
   hit.frame = getFrameInXPos(mousePos.x - separatorX() - m_separator_w + scroll.x);
 
